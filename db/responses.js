@@ -53,9 +53,21 @@ class ResponsesService {
 
   async mutateAllResponses() {
     await this.connect();
-
-    await this.collection.updateMany({}, { $set: { viewed: false } });
+  
+    const totalCount = await this.collection.countDocuments();
+    const skipCount = Math.max(totalCount - 150, 0);
+  
+    const documentsToSkip = await this.collection.find().skip(skipCount).toArray();
+    const lastDocument = documentsToSkip[documentsToSkip.length - 150];
+  
+    if (lastDocument) {
+      await this.collection.updateMany(
+        { _id: { $lt: lastDocument._id } },
+        { $set: { viewed: true } }
+      );
+    }
   }
+  
 }
 
 module.exports = new ResponsesService();

@@ -13,7 +13,7 @@ function filterVisibleResponses(responses) {
   return responses.filter((response) => response.viewed !== true);
 }
 
-mutateAllResponses()
+// mutateAllResponses()
 
 // Обработчик команды /dialogues
 bot.onText(/\/dialogues/, async (msg) => {
