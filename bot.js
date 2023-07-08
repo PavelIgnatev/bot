@@ -1,5 +1,9 @@
 const TelegramBot = require("node-telegram-bot-api");
-const { getAllResponses, postResponse, mutateAllResponses } = require("./db/responses");
+const {
+  getAllResponses,
+  postResponse,
+  mutateAllResponses,
+} = require("./db/responses");
 
 const token = "5804913445:AAE_vH9TJoPTnaKIzc65YHz2h2WssOcTv8c";
 
@@ -116,6 +120,10 @@ bot.onText(/\/dialogues/, async (msg) => {
             page -= 1;
           } else if (data.command === "next" && page < totalPages) {
             page += 1;
+          } else if (data.command === "previous" && page === 1) {
+            page = totalPages; // Вернуться к самому последнему элементу
+          } else if (data.command === "next" && page === totalPages) {
+            page = 1; // Вернуться к самому первому элементу
           } else if (data.command === "visible") {
             showAll = !showAll; // Переключение флага showAll
             responses = await getAllResponses();
@@ -228,7 +236,7 @@ bot.onText(/\/start/, (msg) => {
         description: "Запустить бота",
       },
       {
-       command: "/dialogues",
+        command: "/dialogues",
         description: "Текстовые диалоги со всеми пользователями",
       },
     ],
