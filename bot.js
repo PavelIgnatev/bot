@@ -9,6 +9,12 @@ const token = "5804913445:AAE_vH9TJoPTnaKIzc65YHz2h2WssOcTv8c";
 
 const bot = new TelegramBot(token, { polling: true });
 
+async function getDialogInfo(username) {
+  const responses = await getAllResponses();
+  const dialog = responses.find((response) => response.username === username);
+  return dialog;
+}
+
 // Объект для хранения данных о каждом пользователе
 const userData = {};
 
@@ -239,6 +245,10 @@ bot.onText(/\/start/, (msg) => {
         command: "/dialogues",
         description: "Текстовые диалоги со всеми пользователями",
       },
+      {
+        command: "/info",
+        description: "Текстовый диалог со конкретным пользователем",
+      },
     ],
   };
 
@@ -264,4 +274,33 @@ bot.onText(/\/start/, (msg) => {
     page: 1,
     showAll: true,
   };
+});
+
+bot.onText(/\/info (.+)/, async (msg, match) => {
+  const chatId = msg.chat.id;
+  const username = match[1];
+
+  try {
+    const dialog = await getDialogInfo(username);
+
+    if (dialog) {
+      let responseText = `Пользователь: ${
+        dialog.username.includes("+")
+          ? dialog.username
+          : `@${dialog.username}`
+      }\n`;
+      responseText += `Диалог просмотрен: ${dialog.viewed ? "Да" : "Нет"}\n`;
+      responseText += `Сообщения: ${dialog.messages.join("\n")}\n`;
+
+      bot.sendMessage(chatId, responseText);
+    } else {
+      bot.sendMessage(chatId, "Диалог с указанным пользователем не найден.");
+    }
+  } catch (error) {
+    console.log("Ошибка при получении информации о диалоге:", error);
+    bot.sendMessage(
+      chatId,
+      "Произошла ошибка при получении информации о диалоге. Попробуйте позже."
+    );
+  }
 });
