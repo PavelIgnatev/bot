@@ -61,7 +61,7 @@ bot.onText(/\/dialogues/, async (msg) => {
         ? response.username
         : `@${response.username}`
     }\n`;
-    responseText += `Сообщения: ${response.messages.join("\n")}\n\n`;
+    responseText += `Сообщения: ${response.messages.join("\n").slice(-3800)}\n\n`;
 
     const keyboard = {
       inline_keyboard: [
@@ -165,7 +165,7 @@ bot.onText(/\/dialogues/, async (msg) => {
               ? response.username
               : `@${response.username}`
           }\n`;
-          responseText += `Сообщения: ${response.messages.join("\n")}\n\n`;
+          responseText += `Сообщения: ${response.messages.join("\n").slice(-3800)}\n\n`;
 
           bot.editMessageText(responseText, {
             chat_id: chatId,
@@ -290,7 +290,7 @@ bot.onText(/\/info (.+)/, async (msg, match) => {
           : `@${dialog.username}`
       }\n`;
       responseText += `Диалог просмотрен: ${dialog.viewed ? "Да" : "Нет"}\n`;
-      responseText += `Сообщения: ${dialog.messages.join("\n")}\n`;
+      responseText += `Сообщения: ${dialog.messages.join("\n").slice(-3800)}\n`;
 
       bot.sendMessage(chatId, responseText);
     } else {
