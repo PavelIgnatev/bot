@@ -1,19 +1,14 @@
 const TelegramBot = require("node-telegram-bot-api");
+
 const {
-  getAllResponses,
-  postResponse,
-  mutateAllResponses,
-} = require("./db/responses");
+  postDialogue,
+  getDialogues,
+  getDialogueGroupId,
+} = require("./db/dialogues");
 
 const token = "5804913445:AAE_vH9TJoPTnaKIzc65YHz2h2WssOcTv8c";
 
 const bot = new TelegramBot(token, { polling: true });
-
-async function getDialogInfo(username) {
-  const responses = await getAllResponses();
-  const dialog = responses.find((response) => response.username === username);
-  return dialog;
-}
 
 // Объект для хранения данных о каждом пользователе
 const userData = {};
@@ -26,15 +21,17 @@ function filterVisibleResponses(responses) {
 // mutateAllResponses()
 
 // Обработчик команды /dialogues
-bot.onText(/\/dialogues/, async (msg) => {
+bot.onText(/\/dialogues (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const userId = msg.from.id;
+
+  const groupId = match[1];
 
   let page = 1;
   let showAll = true; // Флаг для определения, отображать все или только новые сообщения
 
   try {
-    let responses = await getAllResponses();
+    let responses = await getDialogues(Number(groupId));
 
     if (responses.length === 0) {
       bot.sendMessage(chatId, "Нет доступных сообщений.");
@@ -61,7 +58,9 @@ bot.onText(/\/dialogues/, async (msg) => {
         ? response.username
         : `@${response.username}`
     }\n`;
-    responseText += `Сообщения: ${response.messages.join("\n").slice(-3800)}\n\n`;
+    responseText += `Сообщения: ${response.messages
+      .join("\n")
+      .slice(-3800)}\n\n`;
 
     const keyboard = {
       inline_keyboard: [
@@ -132,7 +131,7 @@ bot.onText(/\/dialogues/, async (msg) => {
             page = 1; // Вернуться к самому первому элементу
           } else if (data.command === "visible") {
             showAll = !showAll; // Переключение флага showAll
-            responses = await getAllResponses();
+            responses = await getDialogues(Number(groupId));
 
             if (!showAll) {
               responses = filterVisibleResponses(responses); // Фильтрация видимых сообщений
@@ -142,12 +141,9 @@ bot.onText(/\/dialogues/, async (msg) => {
             page = 1;
           } else if (data.command === "mark_viewed") {
             console.log(responses[page - 1].username);
-            await postResponse({
-              username: responses[page - 1].username,
-              viewed: true,
-            });
+            await postDialogue({ ...responses[page - 1], viewed: true });
 
-            responses = await getAllResponses();
+            responses = await getDialogues(Number(groupId));
 
             if (!showAll) {
               responses = filterVisibleResponses(responses); // Фильтрация видимых сообщений
@@ -159,13 +155,17 @@ bot.onText(/\/dialogues/, async (msg) => {
 
           const response = responses[page - 1];
 
+          console.log(response);
+
           let responseText = `Диалог ${page}/${totalPages}\n\n`;
           responseText += `Пользователь: ${
             response.username.includes("+")
               ? response.username
               : `@${response.username}`
           }\n`;
-          responseText += `Сообщения: ${response.messages.join("\n").slice(-3800)}\n\n`;
+          responseText += `Сообщения: ${response.messages
+            .join("\n")
+            .slice(-3800)}\n\n`;
 
           bot.editMessageText(responseText, {
             chat_id: chatId,
@@ -279,15 +279,14 @@ bot.onText(/\/start/, (msg) => {
 bot.onText(/\/info (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const username = match[1];
+  const groupId = 1;
 
   try {
-    const dialog = await getDialogInfo(username);
+    const dialog = await getDialogueGroupId(username, groupId);
 
     if (dialog) {
       let responseText = `Пользователь: ${
-        dialog.username.includes("+")
-          ? dialog.username
-          : `@${dialog.username}`
+        dialog.username.includes("+") ? dialog.username : `@${dialog.username}`
       }\n`;
       responseText += `Диалог просмотрен: ${dialog.viewed ? "Да" : "Нет"}\n`;
       responseText += `Сообщения: ${dialog.messages.join("\n").slice(-3800)}\n`;
