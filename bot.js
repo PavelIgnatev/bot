@@ -100,7 +100,7 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
         ],
         [
           {
-            text: showAll ? "Только новые" : "Вместе с старыми",
+            text: showAll ? "Только новые сообщения" : "Все сообщения",
             callback_data: JSON.stringify({
               command: "visible",
               page: page,
@@ -240,7 +240,7 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
                 ],
                 [
                   {
-                    text: showAll ? "Только новые" : "Вместе с старыми",
+                    text: showAll ? "Только новые сообщения" : "Все сообщения",
                     callback_data: JSON.stringify({
                       command: "visible",
                       page: page,
