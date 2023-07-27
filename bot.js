@@ -194,8 +194,6 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
 
           const response = responses[page - 1];
 
-          ц(response);
-
           let responseText = `Диалог ${page}/${totalPages}\n\n`;
           responseText += `Пользователь: ${
             response.username.includes("+")

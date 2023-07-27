@@ -55,7 +55,6 @@ class DialoguesService {
 
   async getDialogues(groupId) {
     await this.connect();
-    console.log('dsadsa', groupId, typeof groupId)
 
     return await this.collection.find({ groupId }).toArray();
   }
