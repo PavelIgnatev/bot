@@ -100,7 +100,7 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
         ],
         [
           {
-            text: showAll ? "Только новые сообщения" : "Все сообщения",
+            text: showAll ? "Только новые" : "Вместе с старыми",
             callback_data: JSON.stringify({
               command: "visible",
               page: page,
@@ -194,7 +194,7 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
 
           const response = responses[page - 1];
 
-          console.log(response);
+          ц(response);
 
           let responseText = `Диалог ${page}/${totalPages}\n\n`;
           responseText += `Пользователь: ${
@@ -240,7 +240,7 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
                 ],
                 [
                   {
-                    text: showAll ? "Только новые сообщения" : "Все сообщения",
+                    text: showAll ? "Только новые" : "Вместе с старыми",
                     callback_data: JSON.stringify({
                       command: "visible",
                       page: page,
