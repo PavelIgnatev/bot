@@ -100,14 +100,14 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
         ],
         [
           {
-            text: showAll ? "Только новые сообщения" : "Все сообщения",
+            text: showAll ? "Без статуса 'просмотрено'" : "Без фильтра",
             callback_data: JSON.stringify({
               command: "visible",
               page: page,
             }),
           },
           {
-            text: onlyDialogue ? "Все сообщения" : "Только диалоги",
+            text: onlyDialogue ? "Без фильтра" : "Только диалоги",
             callback_data: JSON.stringify({
               command: "only_dialog",
               page: page,
@@ -238,14 +238,14 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
                 ],
                 [
                   {
-                    text: showAll ? "Только новые сообщения" : "Все сообщения",
+                    text: showAll ? "Без статуса 'просмотрено'" : "Без фильтра",
                     callback_data: JSON.stringify({
                       command: "visible",
                       page: page,
                     }),
                   },
                   {
-                    text: onlyDialogue ? "Все сообщения" : "Только диалоги",
+                    text: onlyDialogue ? "Без фильтра" : "Только диалоги",
                     callback_data: JSON.stringify({
                       command: "only_dialog",
                       page: page,
