@@ -33,7 +33,7 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
 
   let page = 1;
   let showAll = true; // Флаг для определения, отображать все или только новые сообщения
-  let onlyDialogue = true;
+  let onlyDialogue = false;
 
   try {
     let responses = await getDialogues(Number(groupId));
@@ -53,7 +53,7 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
 
     const pageSize = 1;
     let totalPages = responses.length;
-
+    console.log(page, totalPages);
     if (page < 1 || page > totalPages) {
       bot.sendMessage(chatId, "Неверный номер страницы.");
       return;
@@ -107,7 +107,7 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
             }),
           },
           {
-            text: onlyDialogue ? "Только диалоги" : "Все сообщения",
+            text: onlyDialogue ? "Все сообщения" : "Только диалоги",
             callback_data: JSON.stringify({
               command: "only_dialog",
               page: page,
@@ -247,7 +247,7 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
                     }),
                   },
                   {
-                    text: onlyDialogue ? "Только диалоги" : "Все сообщения",
+                    text: onlyDialogue ? "Все сообщения" : "Только диалоги",
                     callback_data: JSON.stringify({
                       command: "only_dialog",
                       page: page,
