@@ -61,7 +61,9 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
 
     const response = responses[page - 1];
 
-    let responseText = `Диалог ${page}/${totalPages}\n\n`;
+    let responseText = `${
+      onlyDialogue ? "Диалог" : "Сообщение"
+    } ${page}/${totalPages}\n\n`;
     responseText += `Пользователь: ${
       response.username.includes("+")
         ? response.username
@@ -194,7 +196,9 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
 
           const response = responses[page - 1];
 
-          let responseText = `Диалог ${page}/${totalPages}\n\n`;
+          let responseText = `${
+            onlyDialogue ? "Диалог" : "Сообщение"
+          } ${page}/${totalPages}\n\n`;
           responseText += `Пользователь: ${
             response.username.includes("+")
               ? response.username
@@ -334,7 +338,9 @@ bot.onText(/\/info (.+)/, async (msg, match) => {
       let responseText = `Пользователь: ${
         dialog.username.includes("+") ? dialog.username : `@${dialog.username}`
       }\n`;
-      responseText += `Диалог просмотрен: ${dialog.viewed ? "Да" : "Нет"}\n`;
+      responseText += `${onlyDialogue ? "Диалог" : "Сообщение"} просмотрен: ${
+        dialog.viewed ? "Да" : "Нет"
+      }\n`;
       responseText += `Сообщения: ${dialog.messages.join("\n").slice(-3800)}\n`;
 
       bot.sendMessage(chatId, responseText);
