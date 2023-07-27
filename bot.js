@@ -100,7 +100,7 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
         ],
         [
           {
-            text: showAll ? "Без статуса 'просмотрено'" : "Без фильтра",
+            text: showAll ? "Только новые" : "Без фильтра",
             callback_data: JSON.stringify({
               command: "visible",
               page: page,
@@ -238,7 +238,7 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
                 ],
                 [
                   {
-                    text: showAll ? "Без статуса 'просмотрено'" : "Без фильтра",
+                    text: showAll ? "Только новые" : "Без фильтра",
                     callback_data: JSON.stringify({
                       command: "visible",
                       page: page,
