@@ -18,6 +18,10 @@ function filterVisibleResponses(responses) {
   return responses.filter((response) => response.viewed !== true);
 }
 
+function filterOnlyDialoquesResponses(responses) {
+  return responses.filter((response) => response.messages.length > 1);
+}
+
 // mutateAllResponses()
 
 // Обработчик команды /dialogues
@@ -29,6 +33,7 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
 
   let page = 1;
   let showAll = true; // Флаг для определения, отображать все или только новые сообщения
+  let onlyDialogue = true;
 
   try {
     let responses = await getDialogues(Number(groupId));
@@ -40,6 +45,10 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
 
     if (!showAll) {
       responses = filterVisibleResponses(responses); // Фильтрация видимых сообщений
+    }
+
+    if (onlyDialogue) {
+      responses = filterOnlyDialoquesResponses(responses);
     }
 
     const pageSize = 1;
@@ -91,9 +100,16 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
         ],
         [
           {
-            text: showAll ? "Только новые" : "Все",
+            text: showAll ? "Только новые сообщения" : "Все сообщения",
             callback_data: JSON.stringify({
               command: "visible",
+              page: page,
+            }),
+          },
+          {
+            text: onlyDialogue ? "Только диалоги" : "Все сообщения",
+            callback_data: JSON.stringify({
+              command: "only_dialog",
               page: page,
             }),
           },
@@ -111,6 +127,7 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
           messageId,
           page,
           showAll,
+          onlyDialogue,
         };
 
         bot.on("callback_query", async (callbackQuery) => {
@@ -137,6 +154,10 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
               responses = filterVisibleResponses(responses); // Фильтрация видимых сообщений
             }
 
+            if (onlyDialogue) {
+              responses = filterOnlyDialoquesResponses(responses);
+            }
+
             totalPages = responses.length;
             page = 1;
           } else if (data.command === "mark_viewed") {
@@ -147,6 +168,24 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
 
             if (!showAll) {
               responses = filterVisibleResponses(responses); // Фильтрация видимых сообщений
+            }
+
+            if (onlyDialogue) {
+              responses = filterOnlyDialoquesResponses(responses);
+            }
+
+            totalPages = responses.length;
+            page = 1;
+          } else if (data.command === "only_dialog") {
+            onlyDialogue = !onlyDialogue; // Переключение флага onluDialog
+            responses = await getDialogues(Number(groupId));
+
+            if (!showAll) {
+              responses = filterVisibleResponses(responses); // Фильтрация видимых сообщений
+            }
+
+            if (onlyDialogue) {
+              responses = filterOnlyDialoquesResponses(responses);
             }
 
             totalPages = responses.length;
@@ -201,9 +240,16 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
                 ],
                 [
                   {
-                    text: showAll ? "Только новые диалоги" : "Все диалоги",
+                    text: showAll ? "Только новые сообщения" : "Все сообщения",
                     callback_data: JSON.stringify({
                       command: "visible",
+                      page: page,
+                    }),
+                  },
+                  {
+                    text: onlyDialogue ? "Только диалоги" : "Все сообщения",
+                    callback_data: JSON.stringify({
+                      command: "only_dialog",
                       page: page,
                     }),
                   },
@@ -217,6 +263,7 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
             messageId,
             page,
             showAll,
+            onlyDialogue,
           };
         });
       });
@@ -273,6 +320,7 @@ bot.onText(/\/start/, (msg) => {
     messageId: null,
     page: 1,
     showAll: true,
+    onlyDialogue: true,
   };
 });
 
