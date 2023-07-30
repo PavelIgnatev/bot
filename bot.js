@@ -4,6 +4,7 @@ const {
   postDialogue,
   getDialogues,
   getDialogueGroupId,
+  postDialogueNew,
 } = require("./db/dialogues");
 
 const token = "5804913445:AAE_vH9TJoPTnaKIzc65YHz2h2WssOcTv8c";
@@ -164,7 +165,13 @@ bot.onText(/\/dialogues (.+)/, async (msg, match) => {
             page = 1;
           } else if (data.command === "mark_viewed") {
             console.log(responses[page - 1].username);
-            await postDialogue({ ...responses[page - 1], viewed: true });
+            const current = responses[page - 1];
+
+            if (current.accountId && current.href) {
+              postDialogueNew({ ...responses[page - 1], viewed: true });
+            } else {
+              await postDialogue({ ...responses[page - 1], viewed: true });
+            }
 
             responses = await getDialogues(Number(groupId));
 

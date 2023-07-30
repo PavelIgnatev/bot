@@ -14,6 +14,7 @@ class DialoguesService {
     this.connect = this.connect.bind(this);
 
     this.postDialogue = this.postDialogue.bind(this);
+    this.postDialogueNew = this.postDialogueNew.bind(this);
     this.getDialogue = this.getDialogue.bind(this);
     this.getUsernamesByGroupId = this.getUsernamesByGroupId.bind(this);
     this.getDialogues = this.getDialogues.bind(this);
@@ -37,6 +38,16 @@ class DialoguesService {
 
     await this.collection.updateOne(
       { username: dialogue.username, aiUsername: dialogue.aiUsername },
+      { $set: dialogue },
+      { upsert: true }
+    );
+  }
+
+  async postDialogueNew(dialogue) {
+    await this.connect();
+
+    await this.collection.updateOne(
+      { accountId: dialogue.accountId, href: dialogue.href },
       { $set: dialogue },
       { upsert: true }
     );
